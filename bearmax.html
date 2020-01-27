@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <title>BEARLEAF</title>
+  <script src="leaflet/leaflet.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <link href="leaflet/leaflet.css" rel="stylesheet" />
+  <style type="text/css">
+    body { font-family: helvetica; }
+    .controls {
+      margin: 12px;
+      font-size:18px;
+      display:inline-block;
+      /*overflow: hidden;*/
+    }
+    .filter {
+      margin: 6px;
+      padding: 6px;
+      background: lightblue;
+    }
+    select {
+      font-size: 20px;
+    }
+    .temperature{
+      font-size:20px;
+      width: 48px;
+    }
+    #map {
+      height: 900px;
+      width: 1000px;
+    }
+    .ib { display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <span>LOCATIONS WHERE</span>
+    <div class="ib">(<a onclick="addFilter()" href="#">add another filter</a>)</div>
+    <div class="filter">
+      <select class="months" onchange="applyFilters()">
+        <option value="2">2 MONTHS</option>
+        <option value="4">4 MONTHS</option>
+        <option value="6" selected>6 MONTHS</option>
+        <option value="8">8 MONTHS</option>
+        <option value="10">10 MONTHS</option>
+        <option value="12">12 MONTHS</option>
+      </select>
+      <select class="verb" onchange="applyFilters()">
+        <option value=",0,1," selected>STAY ABOVE</option>
+        <option value=",1,1,">REACH ABOVE</option>
+        <option value=",1,0,">REACH BELOW</option>
+        <option value=",0,0,">STAY BELOW</option>
+      </select>
+      <input type="text" class="temperature" value="50" onkeyup="keyup()"/>
+      <span class="unit">ºF</span>
+    </div>
+  </div>
+  <div id="map"></div>
+  <script>
+    var map = L.map('map', {
+      attributionControl: false,
+      renderer: L.canvas(),
+      center: [18, 0],
+      zoom: 2,
+      minZoom: 2,
+      maxZoom: 5
+    });
+    L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png').addTo(map);
+    // get data
+    var markersLayer;
+    function drawMarkers(cities){
+      if(markersLayer)markersLayer.clearLayers();
+      markersLayer = new L.LayerGroup();
+      for(var i=0; i<cities.length; i++) {
+        var city = cities[i];
+        var marker = L.circleMarker([city.latitude,city.longitude], {
+          'radius': 3,
+          'opacity': 1,
+          'weight': 2,
+          // 'color': (city.type == 'bear' ? 'hotpink' : '#888'),\
+          'color': 'hotpink',
+          'data': [city.tmin, city.tmax]
+        }).bindTooltip(city.city, {
+          'direction': 'top',
+          'offset': [0,-7]
+        });
+        marker.on('click', function () {console.log(this.options.data);});
+        markersLayer.addLayer(marker);
+      }
+      markersLayer.addTo(map);
+    }
+    function keyup(){
+      var key = event.keyCode || event.charCode;
+      if( key == 8 || key == 46 ) return false;
+      applyFilters();
+    }
+    function getFilterParams(){
+      var filters = document.querySelectorAll('.filter');
+      var filterParams = [];
+      for (var i=0; i<filters.length; i++){
+        var inputs = filters[i].querySelectorAll("input, select");
+        var params = "[";
+        for(var j=0;j<inputs.length;j++){
+          params += inputs[j].value;
+        }
+        params += "]";
+        filterParams.push(eval(params));
+      }
+      return filterParams;
+    }
+    function applyFilters(){
+      var params = getFilterParams();
+      console.log(params);
+      var filtered = window.data;
+      for(var i=0; i<params.length; i++){
+        param = params[i];
+        if(window.units=='f'){
+          param[3] = fC(param[3]);
+        }
+        filtered = filtered.filter(function(d){
+          var count = 0;
+          if(param[1]>0 && param[2]>0){
+            for(var i=0; i<d.tmax.length; i++){ if(d.tmax[i] >= param[3]) count++; }
+          } else if(param[1]>0 && param[2]==0){
+            for(var i=0; i<d.tmin.length; i++){ if(d.tmin[i] <= param[3]) count++; }
+          } else if(param[1]==0 && param[2]>0){
+            for(var i=0; i<d.tmin.length; i++){ if(d.tmin[i] >= param[3]) count++; }
+          } else if(param[1]==0 && param[2]==0){
+            for(var i=0; i<d.tmax.length; i++){ if(d.tmax[i] <= param[3]) count++; }
+          }
+          return (count >= param[0]) ? 1 : 0;
+        });
+      }
+      drawMarkers(filtered);
+    }
+    d3.json('https://sxv.github.io/wbear/cities.json',function(d){
+      d3.json('https://sxv.github.io/wbear/wbase5000.json',function(d2){
+        window.data = d.cities.concat(d2.cities.slice(1,1800));
+        // window.data = d.cities;
+        applyFilters();
+        // drawMarkers(window.data);
+      });
+    });
+    function addFilter(){
+      var itm = document.querySelector(".filter");
+      var cln = itm.cloneNode(true);
+      document.querySelector(".controls").appendChild(cln);
+    }
+    function fC(f){
+      return (f-32)*5/9;
+    }
+    window.units = 'f'
+  </script>
+    
+  </body>
+</html>
