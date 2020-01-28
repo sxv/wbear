@@ -27,7 +27,7 @@
       width: 48px;
     }
     #map {
-      height: 900px;
+      height: 600px;
       width: 1000px;
     }
     .ib { display: inline-block; }
@@ -52,7 +52,7 @@
         <option value=",1,0,">REACH BELOW</option>
         <option value=",0,0,">STAY BELOW</option>
       </select>
-      <input type="text" class="temperature" value="50" onkeyup="keyup()"/>
+      <input type="text" class="temperature" value="20" onkeyup="keyup()"/>
       <span class="unit">ºF</span>
     </div>
   </div>
@@ -62,7 +62,7 @@
       attributionControl: false,
       renderer: L.canvas(),
       center: [18, 0],
-      zoom: 2,
+      zoom: 3,
       minZoom: 2,
       maxZoom: 5
     });
@@ -77,9 +77,9 @@
         var marker = L.circleMarker([city.latitude,city.longitude], {
           'radius': 3,
           'opacity': 1,
-          'weight': 2,
-          // 'color': (city.type == 'bear' ? 'hotpink' : '#888'),\
-          'color': 'hotpink',
+          'weight': 1.5,
+          'color': city.wb ? 'hotpink' : '#555',
+          // 'color': 'hotpink',
           'data': [city.tmin, city.tmax]
         }).bindTooltip(city.city, {
           'direction': 'top',
@@ -137,9 +137,7 @@
     d3.json('https://sxv.github.io/wbear/cities.json',function(d){
       d3.json('https://sxv.github.io/wbear/wbase5000.json',function(d2){
         window.data = d.cities.concat(d2.cities.slice(1,1800));
-        // window.data = d.cities;
         applyFilters();
-        // drawMarkers(window.data);
       });
     });
     function addFilter(){
