@@ -35,15 +35,12 @@
 </head>
 <body>
   <div class="controls">
-    <span>LOCATIONS WHERE</span>
+    <span>SHOW ME LOCATIONS WHERE</span>
     <div class="ib">(<a onclick="addFilter()" href="#">add another filter</a>)</div>
     <div class="filter">
       <select class="months" onchange="applyFilters()">
-        <option value="2">2 MONTHS</option>
-        <option value="4">4 MONTHS</option>
+        <option value="2" selected>2 MONTHS</option>
         <option value="6" selected>6 MONTHS</option>
-        <option value="8">8 MONTHS</option>
-        <option value="10">10 MONTHS</option>
         <option value="12">12 MONTHS</option>
       </select>
       <select class="verb" onchange="applyFilters()">
@@ -52,7 +49,7 @@
         <option value=",1,0,">REACH BELOW</option>
         <option value=",0,0,">STAY BELOW</option>
       </select>
-      <input type="text" class="temperature" value="20" onkeyup="keyup()"/>
+      <input type="number" class="temperature" value="20" onkeyup="keyup()"/>
       <span class="unit">ºF</span>
     </div>
   </div>
@@ -62,12 +59,15 @@
       attributionControl: false,
       renderer: L.canvas(),
       center: [18, 0],
-      zoom: 3,
+      zoom: 2,
       minZoom: 2,
       maxZoom: 5
     });
-    L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png').addTo(map);
-    // get data
+    //L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png').addTo(map);
+    //L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png').addTo(map);
+    // L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png').addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
+    //L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png').addTo(map);
     var markersLayer;
     function drawMarkers(cities){
       if(markersLayer)markersLayer.clearLayers();
@@ -76,13 +76,15 @@
         var city = cities[i];
         var marker = L.circleMarker([city.latitude,city.longitude], {
           'radius': 3,
-          'opacity': 1,
-          'weight': 1.5,
-          'color': city.wb ? 'hotpink' : '#555',
-          // 'color': 'hotpink',
+          // 'opacity': city.dim ? 0.1 : 1,
+          'weight': city.dim ? 1 : 2,
+          'color': city.dim ? '#ddd' : (city.wb ? '#bada55' : 'orange'),
+          // 'color': (city.wb ? '#bada55' : 'violet'),
+          'fill': 1,
           'data': [city.tmin, city.tmax]
-        }).bindTooltip(city.city, {
+        }).bindTooltip((city.city + (city.state ? (', ' + city.state) : '')), {
           'direction': 'top',
+          'opacity': city.dim ? 0 : 1,
           'offset': [0,-7]
         });
         marker.on('click', function () {console.log(this.options.data);});
@@ -112,13 +114,13 @@
     function applyFilters(){
       var params = getFilterParams();
       console.log(params);
-      var filtered = window.data;
+      var filtered = JSON.parse(JSON.stringify(window.data));
       for(var i=0; i<params.length; i++){
         param = params[i];
         if(window.units=='f'){
           param[3] = fC(param[3]);
         }
-        filtered = filtered.filter(function(d){
+        filtered = filtered.map(function(d){
           var count = 0;
           if(param[1]>0 && param[2]>0){
             for(var i=0; i<d.tmax.length; i++){ if(d.tmax[i] >= param[3]) count++; }
@@ -129,7 +131,8 @@
           } else if(param[1]==0 && param[2]==0){
             for(var i=0; i<d.tmax.length; i++){ if(d.tmax[i] <= param[3]) count++; }
           }
-          return (count >= param[0]) ? 1 : 0;
+          d.dim = d.dim ? 1 : (count >= param[0]) ? 0 : 1;
+          return d;
         });
       }
       drawMarkers(filtered);
@@ -150,6 +153,9 @@
     }
     window.units = 'f'
   </script>
-    
+  suggestions:<br />
+  the "not montreal": i don't want to have to wear gloves for 6 months of the year -> 6 reach above 65 <br />
+  the "not alabama": i want to be able to go outside during the daytime in summer -> 12 months stay below 85<br />
+  the "charleston": warm nights in summer -> 2 months stay above 65<br />
   </body>
 </html>
