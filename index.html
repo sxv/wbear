@@ -52,6 +52,23 @@
       <input type="number" class="temperature" value="20" onkeyup="keyup()"/>
       <span class="unit">ºF</span>
     </div>
+    <div>
+      <span>or view monthly temperatures</span>
+      <select onchange="selectMonth()">
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+      </select>
+    </div>
   </div>
   <div id="map"></div>
   <script>
@@ -77,10 +94,9 @@
         var marker = L.circleMarker([city.latitude,city.longitude], {
           'radius': 3,
           // 'opacity': city.dim ? 0.1 : 1,
-          'weight': city.dim ? 1 : 2,
+          // 'weight': city.dim ? 1 : 2,
           'color': city.dim ? '#ddd' : (city.wb ? '#bada55' : 'orange'),
           // 'color': (city.wb ? '#bada55' : 'violet'),
-          'fill': 1,
           'data': [city.tmin, city.tmax]
         }).bindTooltip((city.city + (city.state ? (', ' + city.state) : '')), {
           'direction': 'top',
@@ -92,10 +108,85 @@
       }
       markersLayer.addTo(map);
     }
+    function cleanVal(val){
+      return (val == -17.777779 || val == 21.11111) ? 0 : 1
+    }
+    function drawMonth(month){
+      if(markersLayer)markersLayer.clearLayers();
+      // layer 1 = lows
+      var colorScale = d3.scaleLinear().domain([-20,-10,0,10,20,30,40]).range(['white','#6200ff','blue','green','yellow','orange','red']);
+      // var colorScale = d3.scaleLinear().domain([-10,,30]).range(['white','#6200ff','blue','green','yellow','orange','red']);
+      markersLayer = new L.LayerGroup();
+      var cities = window.data;
+      cities.sort(function(a, b){
+        return b['tmin'][month]-a['tmin'][month];
+      });
+      for(var i=0; i<cities.length; i++) {
+        var city = cities[i];
+        var marker = L.circleMarker([city.latitude,city.longitude], {
+          'radius': 5,
+          'fill': 1,
+          'fillColor': cleanVal(city['tmin'][month]) ? colorScale(parseFloat(city['tmin'][month])) : '#00000000',
+          'fillOpacity': 1,
+          //'color': cleanVal(city['tmin'][month]) ? colorScale(parseFloat(city['tmin'][month])) : '#00000000',
+          'stroke': 0,
+          'weight': 3,
+          'data': [city.tmin, city.tmax]
+        }).bindTooltip((city.city + (city.state ? (', ' + city.state) : '')), {
+          'direction': 'top',
+          'opacity': 1,
+          'offset': [0,-7]
+        });
+        marker.on('click', function () {console.log(this.options.data);});
+        markersLayer.addLayer(marker);
+      }
+      markersLayer.addTo(map);
+      // layer 2 = high
+      markersLayer = new L.LayerGroup();
+      for(var i=0; i<cities.length; i++) {
+        var city = cities[i];
+        var marker = L.circleMarker([city.latitude,city.longitude], {
+          'radius': 2,
+          'fill': 1,
+          'fillColor': cleanVal(city['tmax'][month]) ? colorScale(parseFloat(city['tmax'][month])) : '#00000000',
+          'fillOpacity': 1,
+          'stroke': 0,
+          'data': [city.tmin, city.tmax]
+        }).bindTooltip((city.city + (city.state ? (', ' + city.state) : '')), {
+          'direction': 'top',
+          'opacity': 1,
+          'offset': [0,-7]
+        });
+        marker.on('click', function () {console.log(this.options.data);});
+        markersLayer.addLayer(marker);
+      }
+      markersLayer.addTo(map);
+      // layer 3 = covid
+      // var covidScale = d3.scaleLog().domain([1, 82000]).range([1, 20]);
+      // markersLayer = new L.LayerGroup();
+      // for(var i=0; i<window.covid.length; i++) {
+      //   var city = window.covid[i];
+      //   // console.log(city);
+      //   // console.log(covidScale(city.Confirmed));
+      //   var marker = L.circleMarker([city.Latitude,city.Longitude], {
+      //     'radius': covidScale(parseFloat(city.Confirmed) || 1),
+      //     'fill': 1,
+      //     'fillColor': 'black',
+      //     'fillOpacity': .2,
+      //     'stroke': 0
+      //   });
+      //   markersLayer.addLayer(marker);
+      // }
+      // markersLayer.addTo(map);
+    }
     function keyup(){
       var key = event.keyCode || event.charCode;
       if( key == 8 || key == 46 ) return false;
       applyFilters();
+    }
+    function selectMonth(){
+      console.log(event);
+      drawMonth(parseInt(event.target.value)-1);
     }
     function getFilterParams(){
       var filters = document.querySelectorAll('.filter');
@@ -139,8 +230,11 @@
     }
     d3.json('https://sxv.github.io/wbear/cities.json',function(d){
       d3.json('https://sxv.github.io/wbear/wbase5000.json',function(d2){
-        window.data = d.cities.concat(d2.cities.slice(1,1800));
-        applyFilters();
+        d3.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-18-2020.csv",function(covid){
+          window.covid = covid;
+          window.data = d.cities.concat(d2.cities.slice(1,1800));
+          applyFilters();
+        });
       });
     });
     function addFilter(){
