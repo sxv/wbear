@@ -130,7 +130,7 @@
           'fillOpacity': 1,
           //'color': cleanVal(city['tmin'][month]) ? colorScale(parseFloat(city['tmin'][month])) : '#00000000',
           'stroke': 0,
-          'weight': 3,
+          'weight': 3,  
           'data': [city.tmin, city.tmax]
         }).bindTooltip((city.city + (city.state ? (', ' + city.state) : '')), {
           'direction': 'top',
@@ -146,7 +146,7 @@
       for(var i=0; i<cities.length; i++) {
         var city = cities[i];
         var marker = L.circleMarker([city.latitude,city.longitude], {
-          'radius': 2,
+          'radius': 5,
           'fill': 1,
           'fillColor': cleanVal(city['tmax'][month]) ? colorScale(parseFloat(city['tmax'][month])) : '#00000000',
           'fillOpacity': 1,
@@ -162,22 +162,23 @@
       }
       markersLayer.addTo(map);
       // layer 3 = covid
-      // var covidScale = d3.scaleLog().domain([1, 82000]).range([1, 20]);
-      // markersLayer = new L.LayerGroup();
-      // for(var i=0; i<window.covid.length; i++) {
-      //   var city = window.covid[i];
-      //   // console.log(city);
-      //   // console.log(covidScale(city.Confirmed));
-      //   var marker = L.circleMarker([city.Latitude,city.Longitude], {
-      //     'radius': covidScale(parseFloat(city.Confirmed) || 1),
-      //     'fill': 1,
-      //     'fillColor': 'black',
-      //     'fillOpacity': .2,
-      //     'stroke': 0
-      //   });
-      //   markersLayer.addLayer(marker);
-      // }
-      // markersLayer.addTo(map);
+      var covidScale = d3.scaleLog().domain([1, 82000]).range([1, 20]);
+      var caseScale = d3.scaleLinear().domain([0, 550]).range([1, 20]);
+      markersLayer = new L.LayerGroup();
+      for(var i=0; i<window.covid.length; i++) {
+        var city = window.covid[i];
+        console.log(city.case_density);
+        console.log(covidScale(city.case_density));
+        var marker = L.circleMarker([city.Latitude,city.Longitude], {
+          'radius': caseScale(parseFloat(city.case_density)),
+          'fill': 1,
+          'fillColor': 'black',
+          'fillOpacity': 1,
+          'stroke': 0
+        });
+        markersLayer.addLayer(marker);
+      }
+      markersLayer.addTo(map);
     }
     function keyup(){
       var key = event.keyCode || event.charCode;
@@ -230,7 +231,7 @@
     }
     d3.json('https://sxv.github.io/wbear/cities.json',function(d){
       d3.json('https://sxv.github.io/wbear/wbase5000.json',function(d2){
-        d3.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-18-2020.csv",function(covid){
+        d3.csv("https://raw.githubusercontent.com/sxv/wbear/master/covid_data.csv",function(covid){
           window.covid = covid;
           window.data = d.cities.concat(d2.cities.slice(1,1800));
           applyFilters();
