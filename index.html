@@ -239,9 +239,9 @@
     //     });
     //   });
     // });
-    d3.json('https://sxv.github.io/wbear/wbase_full.json',function(d2){
+    d3.json('https://sxv.github.io/wbear/wbase_mod10.json',function(d){
       window.data = d.cities
-      appleFilters();
+      applyFilters();
     });
     function addFilter(){
       var itm = document.querySelector(".filter");
