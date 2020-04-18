@@ -163,14 +163,15 @@
       markersLayer.addTo(map);
       // layer 3 = covid
       var covidScale = d3.scaleLog().domain([1, 82000]).range([1, 20]);
-      var caseScale = d3.scaleLinear().domain([0, 550]).range([1, 20]);
+      var caseLogScale = d3.scaleLog().domain([1, 550]).range([1, 20]);
+      var popScale = d3.scaleLog().domain([.1,1]).range([1, 20]);
+      var caseScale = d3.scaleLinear().domain([1, 550]).range([1, 20]);
       markersLayer = new L.LayerGroup();
       for(var i=0; i<window.covid.length; i++) {
         var city = window.covid[i];
-        console.log(city.case_density);
-        console.log(covidScale(city.case_density));
         var marker = L.circleMarker([city.Latitude,city.Longitude], {
-          'radius': caseScale(parseFloat(city.case_density)),
+          // 'radius': caseScale(parseFloat(city.case_density) || 1),
+          'radius': popScale(parseFloat(city.case_pop) || 1),
           'fill': 1,
           'fillColor': 'black',
           'fillOpacity': 1,
@@ -229,14 +230,18 @@
       }
       drawMarkers(filtered);
     }
-    d3.json('https://sxv.github.io/wbear/cities.json',function(d){
-      d3.json('https://sxv.github.io/wbear/wbase5000.json',function(d2){
-        d3.csv("https://raw.githubusercontent.com/sxv/wbear/master/covid_data.csv",function(covid){
-          window.covid = covid;
-          window.data = d.cities.concat(d2.cities.slice(1,1800));
-          applyFilters();
-        });
-      });
+    // d3.json('https://sxv.github.io/wbear/cities.json',function(d){
+    //   d3.json('https://sxv.github.io/wbear/wbase5000.json',function(d2){
+    //     d3.csv("https://raw.githubusercontent.com/sxv/wbear/master/covid_data.csv",function(covid){
+    //       window.covid = covid;
+    //       window.data = d.cities.concat(d2.cities.slice(1,1800));
+    //       applyFilters();
+    //     });
+    //   });
+    // });
+    d3.json('https://sxv.github.io/wbear/wbase5000.json',function(d2){
+      window.data = d.cities
+      appleFilters();
     });
     function addFilter(){
       var itm = document.querySelector(".filter");
