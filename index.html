@@ -30,7 +30,7 @@
       font-size: 20px;
     }
     .temperature{
-      font-size:20px;
+      font-size: 20px;
       width: 48px;
     }
     #map {
@@ -38,10 +38,15 @@
       width: 1000px;
     }
     .ib { display: inline-block; }
+    .right { float: right; }
+    .hide { display: none; }
   </style>
 </head>
 <body>
   <div class="controls">
+    <div class="loading hide right">
+      <img src="loading.png" />
+    </div>
     <div class="menu menu1">
       <span>View monthly temperatures for: </span>
       <select class="monthSelect" onchange="selectMonth()">
@@ -103,6 +108,14 @@
     //L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png').addTo(map);
     function cleanVal(val){
       return (val == -17.777779 || val == 21.11111) ? 0 : 1
+    }
+    function loading(val){
+      var loadingDiv = document.querySelector(".loading");
+      if(val==1){ loadingDiv.classList.remove('hide'); }
+      else{
+        loadingDiv.classList.remove('hide');
+        loadingDiv.classList.add('hide'):
+      }
     }
     function getColor(city, m, tminmax){
       var colorScale = d3.scaleLinear().domain([-20,-10,0,10,20,30,40]).range(['white','#6200ff','blue','green','yellow','orange','red']);
@@ -175,6 +188,7 @@
         }
       }
       markersLayer2.addTo(map);
+      loading(0);
     }
     function keyup(){
       var key = event.keyCode || event.charCode;
@@ -183,6 +197,7 @@
     }
     function selectMonth(){
       console.log(event);
+      loading(1);
       var mo = document.querySelector('.monthSelect').value;
       drawMonth(parseInt(mo), 1);
       var menuSelected = document.querySelector(".menu.selected");
@@ -206,6 +221,7 @@
       return filterParams;
     }
     function applyFilters(){
+      loading(1);
       var params = getFilterParams();
       console.log(params);
       window.cities = window.data;
