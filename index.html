@@ -169,7 +169,8 @@
     }
     function selectMonth(){
       console.log(event);
-      drawMonth(parseInt(event.target.value), 1);
+      var mo = document.querySelector('.monthSelect').value;
+      drawMonth(parseInt(mo), 1);
     }
     function getFilterParams(){
       var filters = document.querySelectorAll('.filter');
