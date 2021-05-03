@@ -232,7 +232,8 @@
       var d = new Date();
       var mo = d.getMonth();
       drawMonth(mo, 1);
-      document.querySelector('monthSelect')[0].value=mo;
+      document.querySelector('.monthSelect').value=mo;
+      selectMonth();
     });
     function addFilter(){
       var itm = document.querySelector(".filter");
