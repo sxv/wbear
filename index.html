@@ -179,7 +179,7 @@
           markersLayer.addLayer(marker);
         }
       }
-      setTimeout(markersLayer.addTo(map), 2000);
+      markersLayer.addTo(map);
       // layer 2 = HIGHS (or summer)
       if(markersLayer2)markersLayer2.clearLayers();
       markersLayer2 = new L.LayerGroup();
@@ -203,7 +203,7 @@
           markersLayer2.addLayer(marker);
         }
       }
-      setTimeout(markersLayer2.addTo(map), 2000);
+      markersLayer2.addTo(map);
       loading(0);
     }
     function keyup(){
