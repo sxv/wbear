@@ -45,7 +45,7 @@
 <body>
   <div class="controls">
     <div class="loading hide right">
-      <img src="loading.png" />
+      <img src="loading.jpeg" />
     </div>
     <div class="menu menu1">
       <span>View monthly temperatures for: </span>
@@ -114,8 +114,9 @@
       if(val==1){ loadingDiv.classList.remove('hide'); }
       else{
         loadingDiv.classList.remove('hide');
-        loadingDiv.classList.add('hide'):
+        loadingDiv.classList.add('hide');
       }
+      return;
     }
     function getColor(city, m, tminmax){
       var colorScale = d3.scaleLinear().domain([-20,-10,0,10,20,30,40]).range(['white','#6200ff','blue','green','yellow','orange','red']);
