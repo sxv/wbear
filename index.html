@@ -53,7 +53,7 @@
   <div class="controls">
     <div class="menu menu1">
       <span>View monthly temperatures for: </span>
-      <select class="monthSelect" onchange="setTimeout(selectMonth(), 2000)();">
+      <select class="monthSelect" onchange="selectMonth()">
         <option value="0">January</option>
         <option value="1">February</option>
         <option value="2">March</option>
@@ -124,6 +124,14 @@
         loadingDiv.classList.add('hide');
       }
       return;
+    }
+    function menuToggle(val){
+      var menuSelected = document.querySelector(".menu.selected");
+      if(menuSelected){
+        document.querySelector(".menu.selected").classList.remove('selected');
+      }
+      if(val==1){ document.querySelector(".menu.menu2").classList.add('selected'); }
+      else { document.querySelector(".menu.menu1").classList.add('selected'); }
     }
     function getColor(city, m, tminmax){
       var colorScale = d3.scaleLinear().domain([-20,-10,0,10,20,30,40]).range(['white','#6200ff','blue','green','yellow','orange','red']);
@@ -208,11 +216,7 @@
       loading(1);
       var mo = document.querySelector('.monthSelect').value;
       drawMonth(parseInt(mo), 1);
-      var menuSelected = document.querySelector(".menu.selected");
-      if(menuSelected){
-        document.querySelector(".menu.selected").classList.remove('selected');
-      }
-      document.querySelector(".menu.menu1").classList.add('selected');
+      menuToggle(0);
     }
     function getFilterParams(){
       var filters = document.querySelectorAll('.filter');
@@ -269,11 +273,7 @@
         console.log(window.cities.length + ' cities remaining.');
       }
       drawMonth(13, 0);
-      var menuSelected = document.querySelector(".menu.selected");
-      if(menuSelected){
-        document.querySelector(".menu.selected").classList.remove('selected');
-      }
-      document.querySelector(".menu.menu2").classList.add('selected');
+      menuToggle(1);
     }
     d3.json('https://sxv.github.io/wbear/wbase_full_min.json',function(d){
       window.data = d.cities;
