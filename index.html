@@ -71,7 +71,7 @@
       </select>
     </div>
     <div class="menu menu2">
-      <span>or Show me locations where: </span>
+      <span>Or show me locations where: </span>
       <div class="ib">(<a onclick="addFilter()" href="#">add another filter</a>)</div>
       <div class="filter">
         <select class="months" onchange="applyFilters()">
@@ -85,7 +85,7 @@
           <option value=",1,0,">REACH BELOW</option>
           <option value=",0,0,">STAY BELOW</option>
         </select>
-        <input type="number" class="temperature" value="20" onkeyup="keyup()"/>
+        <input type="number" class="temperature" value="20" onchange="applyFilters()"/>
         <span class="unit">ºF</span>
       </div>
     </div>
