@@ -83,6 +83,11 @@
   </div>
   <div id="map"></div>
   <script>
+    // initialize current month
+    var d = new Date();
+    var mo = d.getMonth();
+    document.querySelector('.monthSelect').value=mo;
+
     var map = L.map('map', {
       attributionControl: false,
       renderer: L.canvas(),
@@ -250,9 +255,6 @@
       window.data = d.cities;
       window.cities = d.cities;
       // draw current month
-      var d = new Date();
-      var mo = d.getMonth();
-      document.querySelector('.monthSelect').value=mo;
       selectMonth();
     });
     function addFilter(){
