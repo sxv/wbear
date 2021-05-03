@@ -36,7 +36,7 @@
 <body>
   <div class="controls">
     <div>
-      <span>or view monthly temperatures</span>
+      <span>Viewing monthly temperatures for:</span>
       <select onchange="selectMonth()">
         <option value="0">January</option>
         <option value="1">February</option>
@@ -224,12 +224,14 @@
         });
         console.log(window.cities.length + ' cities remaining.');
       }
-      drawMonth(13, 0);
     }
     d3.json('https://sxv.github.io/wbear/wbase_full_min.json',function(d){
       window.data = d.cities;
       window.cities = d.cities;
-      applyFilters();
+      // draw current month
+      var d = new Date();
+      var mo = d.getMonth();
+      drawMonth(mo, 1);
     });
     function addFilter(){
       var itm = document.querySelector(".filter");
