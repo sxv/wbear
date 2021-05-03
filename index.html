@@ -37,7 +37,7 @@
   <div class="controls">
     <div>
       <span>Viewing monthly temperatures for:</span>
-      <select onchange="selectMonth()">
+      <select class="monthSelect" onchange="selectMonth()">
         <option value="0">January</option>
         <option value="1">February</option>
         <option value="2">March</option>
@@ -232,6 +232,7 @@
       var d = new Date();
       var mo = d.getMonth();
       drawMonth(mo, 1);
+      document.querySelector('monthSelect')[0].value=mo;
     });
     function addFilter(){
       var itm = document.querySelector(".filter");
