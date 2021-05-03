@@ -179,8 +179,11 @@
       console.log(event);
       var mo = document.querySelector('.monthSelect').value;
       drawMonth(parseInt(mo), 1);
-      document.querySelector(".menu.selected").classList.remove('selected');
-      document.querySelector(".menu.menu1").classList.add('selected');
+      var menuSelected = document.querySelector(".menu.selected");
+      if(menuSelected){
+        document.querySelector(".menu.selected").classList.remove('selected');
+      }
+      document.querySelector(".menu.menu2").classList.add('selected');
     }
     function getFilterParams(){
       var filters = document.querySelectorAll('.filter');
@@ -253,7 +256,7 @@
     function addFilter(){
       var itm = document.querySelector(".filter");
       var cln = itm.cloneNode(true);
-      document.querySelector(".controls").appendChild(cln);
+      document.querySelector(".menu2").appendChild(cln);
     }
     function fC(f){
       return (f-32)*5/9;
