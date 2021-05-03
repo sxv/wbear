@@ -14,7 +14,8 @@
       display:inline-block;
       /*overflow: hidden;*/
     }
-    .menu { 
+    .menu {
+      padding: 6px;
       border: 3px solid white;
     } .menu.selected {
       border: 3px solid orange;
@@ -234,7 +235,10 @@
         });
         console.log(window.cities.length + ' cities remaining.');
       }
-      document.querySelector(".menu.selected").classList.remove('selected');
+      var menuSelected = document.querySelector(".menu.selected");
+      if(menuSelected){
+        document.querySelector(".menu.selected").classList.remove('selected');
+      }
       document.querySelector(".menu.menu2").classList.add('selected');
     }
     d3.json('https://sxv.github.io/wbear/wbase_full_min.json',function(d){
