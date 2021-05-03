@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>BEARLEAF</title>
   <script src="leaflet/leaflet.js"></script>
-  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="d3.v4.min.js"></script>
   <link href="leaflet/leaflet.css" rel="stylesheet" />
   <style type="text/css">
     body { font-family: helvetica; }
@@ -231,7 +231,6 @@
       // draw current month
       var d = new Date();
       var mo = d.getMonth();
-      drawMonth(mo, 1);
       document.querySelector('.monthSelect').value=mo;
       selectMonth();
     });
