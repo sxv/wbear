@@ -33,20 +33,23 @@
       font-size: 20px;
       width: 48px;
     }
+    .loading {
+      top: 200px;
+      left: 400px;
+    } .loading img {
+      width: 90px;
+      height: 90px;
+    }
     #map {
       height: 600px;
       width: 1000px;
     }
     .ib { display: inline-block; }
-    .right { float: right; }
     .hide { display: none; }
   </style>
 </head>
 <body>
   <div class="controls">
-    <div class="loading hide right">
-      <img src="loading.jpeg" />
-    </div>
     <div class="menu menu1">
       <span>View monthly temperatures for: </span>
       <select class="monthSelect" onchange="selectMonth()">
@@ -85,6 +88,9 @@
         <span class="unit">ºF</span>
       </div>
     </div>
+  </div>
+  <div class="loading hide">
+    <img src="loading.jpeg" />
   </div>
   <div id="map"></div>
   <script>
