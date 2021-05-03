@@ -35,23 +35,6 @@
 </head>
 <body>
   <div class="controls">
-    <span>SHOW ME LOCATIONS WHERE</span>
-    <div class="ib">(<a onclick="addFilter()" href="#">add another filter</a>)</div>
-    <div class="filter">
-      <select class="months" onchange="applyFilters()">
-        <option value="2" selected>2 MONTHS</option>
-        <option value="6" selected>6 MONTHS</option>
-        <option value="12">12 MONTHS</option>
-      </select>
-      <select class="verb" onchange="applyFilters()">
-        <option value=",0,1," selected>STAY ABOVE</option>
-        <option value=",1,1,">REACH ABOVE</option>
-        <option value=",1,0,">REACH BELOW</option>
-        <option value=",0,0,">STAY BELOW</option>
-      </select>
-      <input type="number" class="temperature" value="20" onkeyup="keyup()"/>
-      <span class="unit">ºF</span>
-    </div>
     <div>
       <span>or view monthly temperatures</span>
       <select onchange="selectMonth()">
@@ -70,6 +53,23 @@
         <option value="12">Moderates (WinterHighSummerLow)</option>
         <option value="13">Extremes (WinterLowSummerHigh)</option>
       </select>
+    </div>
+    <span>or SHOW ME LOCATIONS WHERE</span>
+    <div class="ib">(<a onclick="addFilter()" href="#">add another filter</a>)</div>
+    <div class="filter">
+      <select class="months" onchange="applyFilters()">
+        <option value="2" selected>2 MONTHS</option>
+        <option value="6" selected>6 MONTHS</option>
+        <option value="12">12 MONTHS</option>
+      </select>
+      <select class="verb" onchange="applyFilters()">
+        <option value=",0,1," selected>STAY ABOVE</option>
+        <option value=",1,1,">REACH ABOVE</option>
+        <option value=",1,0,">REACH BELOW</option>
+        <option value=",0,0,">STAY BELOW</option>
+      </select>
+      <input type="number" class="temperature" value="20" onkeyup="keyup()"/>
+      <span class="unit">ºF</span>
     </div>
   </div>
   <div id="map"></div>
@@ -99,7 +99,8 @@
         if(tminmax=='tmin') return colorScale( Math.min(...city['tmin']) );
         if(tminmax=='tmax') return colorScale( Math.max(...city['tmax']) );
       } else { // get specified month
-        return cleanVal(city[tminmax][m]) ? colorScale(parseFloat(city[tminmax][m])) : '#00000000';
+        return colorScale(parseFloat(city[tminmax][m]));
+        // return cleanVal(city[tminmax][m]) ? colorScale(parseFloat(city[tminmax][m])) : '#00000000';
       }
     }
     var markersLayer, markersLayer2;
@@ -225,7 +226,7 @@
       }
       drawMonth(13, 0);
     }
-    d3.json('https://sxv.github.io/wbear/wbase_full.json',function(d){
+    d3.json('https://sxv.github.io/wbear/wbase_full_min.json',function(d){
       window.data = d.cities;
       window.cities = d.cities;
       applyFilters();
