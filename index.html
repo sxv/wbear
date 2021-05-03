@@ -14,6 +14,11 @@
       display:inline-block;
       /*overflow: hidden;*/
     }
+    .menu { 
+      border: 3px solid white;
+    } .menu.selected {
+      border: 3px solid orange;
+    }
     .filter {
       margin: 6px;
       padding: 6px;
@@ -35,7 +40,7 @@
 </head>
 <body>
   <div class="controls">
-    <div>
+    <div class="menu menu1">
       <span>Viewing monthly temperatures for:</span>
       <select class="monthSelect" onchange="selectMonth()">
         <option value="0">January</option>
@@ -54,22 +59,24 @@
         <option value="13">Extremes (WinterLowSummerHigh)</option>
       </select>
     </div>
-    <span>or SHOW ME LOCATIONS WHERE</span>
-    <div class="ib">(<a onclick="addFilter()" href="#">add another filter</a>)</div>
-    <div class="filter">
-      <select class="months" onchange="applyFilters()">
-        <option value="2" selected>2 MONTHS</option>
-        <option value="6" selected>6 MONTHS</option>
-        <option value="12">12 MONTHS</option>
-      </select>
-      <select class="verb" onchange="applyFilters()">
-        <option value=",0,1," selected>STAY ABOVE</option>
-        <option value=",1,1,">REACH ABOVE</option>
-        <option value=",1,0,">REACH BELOW</option>
-        <option value=",0,0,">STAY BELOW</option>
-      </select>
-      <input type="number" class="temperature" value="20" onkeyup="keyup()"/>
-      <span class="unit">ºF</span>
+    <div class="menu menu2">
+      <span>or SHOW ME LOCATIONS WHERE</span>
+      <div class="ib">(<a onclick="addFilter()" href="#">add another filter</a>)</div>
+      <div class="filter">
+        <select class="months" onchange="applyFilters()">
+          <option value="2" selected>2 MONTHS</option>
+          <option value="6" selected>6 MONTHS</option>
+          <option value="12">12 MONTHS</option>
+        </select>
+        <select class="verb" onchange="applyFilters()">
+          <option value=",0,1," selected>STAY ABOVE</option>
+          <option value=",1,1,">REACH ABOVE</option>
+          <option value=",1,0,">REACH BELOW</option>
+          <option value=",0,0,">STAY BELOW</option>
+        </select>
+        <input type="number" class="temperature" value="20" onkeyup="keyup()"/>
+        <span class="unit">ºF</span>
+      </div>
     </div>
   </div>
   <div id="map"></div>
@@ -171,6 +178,8 @@
       console.log(event);
       var mo = document.querySelector('.monthSelect').value;
       drawMonth(parseInt(mo), 1);
+      document.querySelector(".menu.selected").classList.remove('selected');
+      document.querySelector(".menu.menu1").classList.add('selected');
     }
     function getFilterParams(){
       var filters = document.querySelectorAll('.filter');
@@ -225,6 +234,8 @@
         });
         console.log(window.cities.length + ' cities remaining.');
       }
+      document.querySelector(".menu.selected").classList.remove('selected');
+      document.querySelector(".menu.menu2").classList.add('selected');
     }
     d3.json('https://sxv.github.io/wbear/wbase_full_min.json',function(d){
       window.data = d.cities;
